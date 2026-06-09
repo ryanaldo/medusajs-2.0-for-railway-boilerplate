@@ -97,20 +97,15 @@ const medusaConfig = {
       options: {
         providers: [
           {
-            resolve: '@perseidesjs/notification-nodemailer',
-            id: 'nodemailer',
+            resolve: '@medusajs/notification-sendgrid',
+            id: 'sendgrid',
             options: {
               channels: ['email'],
-              transport: {
-                host: process.env.SMTP_HOST || 'smtp.zoho.com',
-                port: parseInt(process.env.SMTP_PORT || '465', 10),
-                secure: true, 
-                auth: {
-                  user: process.env.SMTP_USER,
-                  pass: process.env.SMTP_PASS, 
-                },
-              },
-              from: process.env.SMTP_FROM,
+              // We inject your Zoho credentials right into the SendGrid transporter config
+              api_key: process.env.SMTP_PASS, // Your Zoho App Password
+              from: process.env.SMTP_FROM,     // Your Zoho Email
+              host: process.env.SMTP_HOST || 'smtp.zoho.com',
+              port: parseInt(process.env.SMTP_PORT || '465', 10),
             },
           },
         ]
