@@ -91,32 +91,31 @@ const medusaConfig = {
         }
       }
     }] : []),
-    ...(SENDGRID_API_KEY && SENDGRID_FROM_EMAIL || RESEND_API_KEY && RESEND_FROM_EMAIL ? [{
+    {
       key: Modules.NOTIFICATION,
       resolve: '@medusajs/notification',
       options: {
         providers: [
-          ...(SENDGRID_API_KEY && SENDGRID_FROM_EMAIL ? [{
-            resolve: '@medusajs/notification-sendgrid',
-            id: 'sendgrid',
+          {
+            resolve: '@perseidesjs/notification-nodemailer',
+            id: 'nodemailer',
             options: {
               channels: ['email'],
-              api_key: SENDGRID_API_KEY,
-              from: SENDGRID_FROM_EMAIL,
-            }
-          }] : []),
-          ...(RESEND_API_KEY && RESEND_FROM_EMAIL ? [{
-            resolve: './src/modules/email-notifications',
-            id: 'resend',
-            options: {
-              channels: ['email'],
-              api_key: RESEND_API_KEY,
-              from: RESEND_FROM_EMAIL,
+              transport: {
+                host: process.env.SMTP_HOST || 'smtp.zoho.com',
+                port: parseInt(process.env.SMTP_PORT || '465', 10),
+                secure: true, 
+                auth: {
+                  user: process.env.SMTP_USER,
+                  pass: process.env.SMTP_PASS, 
+                },
+              },
+              from: process.env.SMTP_FROM,
             },
-          }] : []),
+          },
         ]
       }
-    }] : []),
+    },
     ...(STRIPE_API_KEY && STRIPE_WEBHOOK_SECRET ? [{
       key: Modules.PAYMENT,
       resolve: '@medusajs/payment',
