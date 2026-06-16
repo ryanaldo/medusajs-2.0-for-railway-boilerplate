@@ -9,10 +9,12 @@ if (!fs.existsSync(MEDUSA_SERVER_PATH)) {
   throw new Error('.medusa/server directory not found. This indicates the Medusa build process failed. Please check for build errors.');
 }
 
-// Safely copy package-lock.json if it exists
-const lockPath = path.join(process.cwd(), 'package-lock.json');
-if (fs.existsSync(lockPath)) {
-  fs.copyFileSync(lockPath, path.join(MEDUSA_SERVER_PATH, 'package-lock.json'));
+// This project is installed with pnpm on Railway. Avoid copying a stale npm lockfile
+// into the generated server bundle, as npm will honor it during the production
+// dependency install below.
+const generatedLockPath = path.join(MEDUSA_SERVER_PATH, 'package-lock.json');
+if (fs.existsSync(generatedLockPath)) {
+  fs.rmSync(generatedLockPath);
 }
 
 // Copy .env if it exists
